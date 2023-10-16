@@ -77,7 +77,7 @@ let shareStoreString = shareStore.toJSON();
 let shareDetail2 = await tkey.generateNewShare();
 let shareStore2 = await tkey.outputShareStore(shareDetail2.newShareIndex);
 let shareStoreString2 = shareStore2.toJSON();
-// save shareStoreString2 to database2 
+// save shareStoreString2 to another server and fetch it via secure API 
 
 // ReLogin
 let newTkey = new ThresholdKey({
@@ -89,7 +89,7 @@ let newKeyDetails = await newTkey.initialize();
 // load shareStoreString from database
 let shareStorefromJson = ShareStore.fromJSON(shareStoreString);
 await newTkey.inputShareStore(shareStorefromJson);
-// load shareStoreString2 from database2
+// load shareStoreString2 from another server via secure API 
 let shareStore2fromJson = ShareStore.fromJSON(shareStoreString2);
 await newTkey.inputShareStore(shareStore2fromJson);
 
