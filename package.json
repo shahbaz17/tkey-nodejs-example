@@ -1,0 +1,20 @@
+{
+  "author": "",
+  "dependencies": {
+    "@tkey/common-types": "^12.0.0",
+    "@tkey/core": "^12.0.0",
+    "@tkey/service-provider-sfa": "^11.0.0",
+    "@tkey/service-provider-torus": "^12.0.0",
+    "@tkey/storage-layer-torus": "^12.0.0",
+    "@toruslabs/torus.js": "^12.0.1",
+    "jsonwebtoken": "^8.5.1"
+  },
+  "description": "tkey nodejs example",
+  "license": "ISC",
+  "main": "index.js",
+  "name": "tkey-nodejs",
+  "scripts": {
+    "start": "bun index.js"
+  },
+  "version": "1.0.0"
+}
