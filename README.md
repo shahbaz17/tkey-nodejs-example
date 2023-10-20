@@ -12,13 +12,11 @@ cd tkey-nodejs-example
 ## Installation
 
 ```bash
-bun install
+npm run install
 ```
 
 ## Usage
 
 ```bash
-bun run start
-# or
-bun index.js
+npm run start
 ```

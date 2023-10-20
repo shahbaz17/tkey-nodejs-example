@@ -41,7 +41,7 @@ export const mockLogin = async (email: string) => {
 };
 
 async function main() {
-  let { idToken, parsedToken } = await mockLogin("an6cbotecvY");
+  let { idToken, parsedToken } = await mockLogin("an6cborrecvY");
   let verifier = "torus-test-health";
   let verifierId = parsedToken.email;
 
