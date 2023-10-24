@@ -1,10 +1,12 @@
 import ThresholdKey from "@tkey/core";
 import { ShareStore } from "@tkey/common-types";
 import { TorusStorageLayer } from "@tkey/storage-layer-torus";
-import { TorusServiceProvider } from "@tkey/service-provider-torus";
+import { SfaServiceProvider } from "@tkey/service-provider-sfa";
 import jwt from "jsonwebtoken";
+import { EthereumPrivateKeyProvider } from "@web3auth/ethereum-provider";
 import Torus from "@toruslabs/torus.js";
 import BN from "bn.js";
+import { tkey, newtKey, chainConfig } from "./tkey";
 
 function parseToken(token: string) {
   const base64Url = token.split(".")[1];
@@ -41,41 +43,34 @@ export const mockLogin = async (email: string) => {
 };
 
 async function main() {
-  let { idToken, parsedToken } = await mockLogin("an6cborrecvY");
+  let { idToken, parsedToken } = await mockLogin(
+    `anch${Math.floor(Math.random() * 10) + 1}drrecvY`
+  );
   let verifier = "torus-test-health";
   let verifierId = parsedToken.email;
 
-  let storageLayer = new TorusStorageLayer({
-    hostUrl: "https://metadata.tor.us",
-  });
-  let serviceProvider = new TorusServiceProvider({
-    customAuthArgs: {
-      network: "sapphire_devnet",
-      web3AuthClientId: "torus-key-test",
-      baseUrl: "https://localhost",
-      uxMode: "redirect",
+  const ethereumPrivateKeyProvider = new EthereumPrivateKeyProvider({
+    config: {
+      chainConfig,
     },
   });
-  // await serviceProvider.init({ skipSw: true, skipInit: true });
-  let torusKey = await serviceProvider.customAuthInstance.getTorusKey(
+
+  await (tkey.serviceProvider as SfaServiceProvider).init(
+    ethereumPrivateKeyProvider
+  );
+
+  await (tkey.serviceProvider as SfaServiceProvider).connect({
     verifier,
     verifierId,
-    { verifier_id: verifierId },
-    idToken
-  );
-  serviceProvider.postboxKey = new BN(Torus.getPostboxKey(torusKey), "hex");
-
-  let tkey = new ThresholdKey({
-    serviceProvider,
-    storageLayer,
+    idToken,
   });
 
   // First time login or initialize()
   let keyDetails = await tkey.initialize();
-  console.log(keyDetails);
+  // console.log(keyDetails);
   let result1 = await tkey.reconstructKey();
-  console.log(result1);
-  console.log("privKey", tkey.privKey);
+  // console.log(result1);
+  // console.log("privKey", tkey.privKey);
 
   let shareDetail = await tkey.generateNewShare();
   let shareStore = await tkey.outputShareStore(shareDetail.newShareIndex);
@@ -88,10 +83,7 @@ async function main() {
   // save shareStoreString2 to another server and fetch it via secure API
 
   // ReLogin
-  let newTkey = new ThresholdKey({
-    serviceProvider,
-    storageLayer,
-  });
+  let newTkey = newtKey;
 
   let newKeyDetails = await newTkey.initialize();
   // load shareStoreString from database
@@ -102,7 +94,8 @@ async function main() {
   await newTkey.inputShareStore(shareStore2fromJson);
 
   let result2 = await newTkey.reconstructKey();
-  console.log(result2);
+  // console.log(result2);
   console.log("privKey new instance: ", newTkey.privKey);
+  process.exit(0);
 }
 main();
